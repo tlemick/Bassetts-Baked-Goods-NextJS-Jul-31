@@ -17,8 +17,9 @@ export interface Product {
     price: string
     description: string
     isFeatured: boolean
+    canBeVegan: boolean
+    canBeGF: boolean
     size: Size
-    color: Color
     images: Image[]
 }
 
@@ -28,12 +29,6 @@ export interface Image {
 }
 
 export interface Size {
-    id: string
-    name: string
-    value: string
-}
-
-export interface Color {
     id: string
     name: string
     value: string

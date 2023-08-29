@@ -8,7 +8,8 @@ export const revalidate = 0
 
 const HomePage = async () => {
     const products = await getProducts({ isFeatured: true })
-    const billboard = await getBillboard("85ce0ad5-a7fb-45a4-9cf3-08ccae167253")
+    const veganProducts = await getProducts({ canBeVegan: true })
+    const billboard = await getBillboard("d0a46c49-7335-4efd-9b43-93c86353e562")
     return (
         <Container>
             <div className="space-y-10 pb-10">
@@ -16,6 +17,12 @@ const HomePage = async () => {
             </div>
             <div className="flex flex-col gap-y-8 sm:px-6 lg:px-8">
                 <ProductList title="Featured Products" items={products} />
+            </div>
+            <div className="flex flex-col gap-y-8 sm:px-6 lg:px-8">
+                <ProductList
+                    title="Explore our vegan options!"
+                    items={veganProducts}
+                />
             </div>
         </Container>
     )

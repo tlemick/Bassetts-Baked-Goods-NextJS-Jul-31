@@ -20,7 +20,6 @@ export async function GET(
                 images: true,
                 category: true,
                 size: true,
-                color: true,
             },
         })
 
@@ -44,11 +43,12 @@ export async function PATCH(
             price,
             description,
             categoryId,
-            colorId,
             sizeId,
             images,
             isFeatured,
             isArchived,
+            canBeGF,
+            canBeVegan,
         } = body
 
         if (!userId) {
@@ -79,10 +79,6 @@ export async function PATCH(
             return new NextResponse("Size Id is required", { status: 400 })
         }
 
-        if (!colorId) {
-            return new NextResponse("Color Id is required", { status: 400 })
-        }
-
         if (!params.productId) {
             return new NextResponse("Product id is required", { status: 400 })
         }
@@ -107,13 +103,14 @@ export async function PATCH(
                 price,
                 description,
                 categoryId,
-                colorId,
                 sizeId,
                 images: {
                     deleteMany: {},
                 },
                 isArchived,
                 isFeatured,
+                canBeGF,
+                canBeVegan,
             },
         })
 
