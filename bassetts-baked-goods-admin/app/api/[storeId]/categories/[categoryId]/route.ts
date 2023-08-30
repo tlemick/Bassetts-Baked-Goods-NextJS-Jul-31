@@ -36,7 +36,7 @@ export async function PATCH(
         const { userId } = auth()
         const body = await req.json()
 
-        const { name, billboardId } = body
+        const { name, description, billboardId } = body
 
         if (!userId) {
             return new NextResponse("Unathenticated", { status: 401 })
@@ -44,6 +44,10 @@ export async function PATCH(
 
         if (!name) {
             return new NextResponse("Name is required", { status: 400 })
+        }
+
+        if (!description) {
+            return new NextResponse("Description is required", { status: 400 })
         }
 
         if (!billboardId) {
@@ -71,6 +75,7 @@ export async function PATCH(
             },
             data: {
                 name,
+                description,
                 billboardId,
             },
         })
