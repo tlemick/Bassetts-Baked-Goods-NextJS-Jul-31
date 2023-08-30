@@ -24,36 +24,36 @@ export const columns: ColumnDef<ProductColumn>[] = [
         header: "Name",
     },
     {
-        accessorKey: "isArchived",
-        header: "Archived",
-    },
-    {
-        accessorKey: "isFeatured",
-        header: "Featured",
-    },
-    {
-        accessorKey: "price",
-        header: "Price",
-    },
-    {
         accessorKey: "category",
         header: "Category",
-    },
-    {
-        accessorKey: "description",
-        header: "Description",
     },
     {
         accessorKey: "size",
         header: "Size",
     },
     {
+        accessorKey: "price",
+        header: "Price",
+    },
+    {
+        accessorKey: "description",
+        header: "Description",
+    },
+    {
         accessorKey: "canBeVegan",
-        header: "Vegan?",
+        header: "Vegan",
     },
     {
         accessorKey: "canBeGF",
-        header: "GF?",
+        header: "GF",
+    },
+    {
+        accessorKey: "isArchived",
+        header: "Archived",
+    },
+    {
+        accessorKey: "isFeatured",
+        header: "Featured",
     },
     {
         accessorKey: "createdAt",

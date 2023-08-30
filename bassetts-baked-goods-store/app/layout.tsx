@@ -1,4 +1,5 @@
 import { Urbanist } from "next/font/google"
+import { Roboto_Slab } from "next/font/google"
 
 import Footer from "@/components/footer"
 import Navbar from "@/components/navbar"

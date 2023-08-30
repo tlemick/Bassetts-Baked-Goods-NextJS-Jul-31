@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { MouseEventHandler } from "react"
-import { Expand, ShoppingCart } from "lucide-react"
+import { Expand, ShoppingCart, Vegan, WheatOff } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 import Currency from "@/components/ui/currency"
@@ -71,10 +71,25 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
             </div>
             {/* Description */}
             <div>
-                <p className="font-semibold text-lg">{data.name}</p>
-                <p className="text-sm text-gray-500">{data.category?.name}</p>
+                <div className="flex gap-x-4 items-baseline">
+                    <p className="font-semibold text-lg">{data.name}</p>
+                </div>
+                <div className="flex gap-x-4">
+                    {data?.canBeVegan && (
+                        <div className="flex gap-x-2 items-center">
+                            <Vegan size={16} className="text-gray-600" />
+                            <p className="text-sm text-gray-500">Vegan</p>
+                        </div>
+                    )}
+                    {data?.canBeGF && (
+                        <div className="flex gap-x-2 items-center">
+                            <WheatOff size={16} className="text-gray-600" />
+                            <p className="text-sm text-gray-500">Gluten free</p>
+                        </div>
+                    )}
+                </div>
             </div>
-            {/* Price & Reiew */}
+            {/* Price & Review */}
             <div className="flex items-center justify-between">
                 <Currency value={data?.price} />
             </div>

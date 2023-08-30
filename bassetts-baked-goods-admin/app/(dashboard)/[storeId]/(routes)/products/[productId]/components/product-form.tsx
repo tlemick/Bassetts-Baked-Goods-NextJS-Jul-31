@@ -376,9 +376,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                                         />
                                     </FormControl>
                                     <div className="space-y-1 leading-none">
-                                        <FormLabel>Can Be Vegan?</FormLabel>
+                                        <FormLabel>Vegan</FormLabel>
                                         <FormDescription>
-                                            This product can be made using vegan
+                                            This product is made using vegan
                                             ingredients.
                                         </FormDescription>
                                     </div>
@@ -398,10 +398,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                                         />
                                     </FormControl>
                                     <div className="space-y-1 leading-none">
-                                        <FormLabel>GlutenFree?</FormLabel>
+                                        <FormLabel>Gluten Free</FormLabel>
                                         <FormDescription>
-                                            This product can be made
-                                            gluten-free.
+                                            This product is gluten-free.
                                         </FormDescription>
                                     </div>
                                 </FormItem>

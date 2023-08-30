@@ -1,6 +1,6 @@
 "use client"
 
-import { ShoppingCart } from "lucide-react"
+import { ShoppingCart, Vegan, WheatOff } from "lucide-react"
 
 import Currency from "@/components/ui/currency"
 import Button from "@/components/ui/button"
@@ -27,6 +27,7 @@ const Info: React.FC<InfoProps> = ({ data }) => {
                 </p>
             </div>
             <hr className="my-4" />
+
             <div className="flex flex-col gap-y-6">
                 <div>
                     <p className="text-black">{data?.description}</p>
@@ -34,6 +35,24 @@ const Info: React.FC<InfoProps> = ({ data }) => {
                 <div className="flex items-center gap-x-4">
                     <h3 className="font-semibold text-black">Size:</h3>
                     <div>{data?.size?.value}</div>
+                </div>
+                <div>
+                    <div className="flex gap-x-4">
+                        {data?.canBeVegan && (
+                            <div className="flex gap-x-2 items-center">
+                                <Vegan size={16} className="text-gray-600" />
+                                <p className="text-sm text-gray-500">Vegan</p>
+                            </div>
+                        )}
+                        {data?.canBeGF && (
+                            <div className="flex gap-x-2 items-center">
+                                <WheatOff size={16} className="text-gray-600" />
+                                <p className="text-sm text-gray-500">
+                                    Gluten free
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
             <div className="mt-10 flex items-center gap-x-3">
