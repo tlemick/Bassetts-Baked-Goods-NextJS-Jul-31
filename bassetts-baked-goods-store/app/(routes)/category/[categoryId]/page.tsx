@@ -31,14 +31,22 @@ const CategoryPage: React.FC<CategoryPageProps> = async ({
     })
 
     const vegan = await getProducts({ canBeVegan: true })
-
+    //for building a filter
     const sizes = await getSizes()
     const category = await getCategory(params.categoryId)
 
     return (
-        <div className="bg-white">
-            <Container>
+        <>
+            <section className="grid grid-cols-2 mb-24 bg-blue-50">
                 <Billboard data={category.billboard} />
+                <div className="grid content-center p-8">
+                    <p className="text-3xl font-semibold pb-4">
+                        {category.name}
+                    </p>
+                    <p className="text-lg max-w-md">{category.description}</p>
+                </div>
+            </section>
+            <Container>
                 <div className="px-4 sm:px-6 lg:px-8 pb-24">
                     <div className="lg:grid lg:grid-cols-5 lg:gap-x-8">
                         <MobileFilters sizes={sizes} />
@@ -60,7 +68,7 @@ const CategoryPage: React.FC<CategoryPageProps> = async ({
                     </div>
                 </div>
             </Container>
-        </div>
+        </>
     )
 }
 
