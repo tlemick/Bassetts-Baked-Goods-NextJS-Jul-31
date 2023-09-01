@@ -33,7 +33,7 @@ export async function PATCH(
         const { userId } = auth()
         const body = await req.json()
 
-        const { name, value } = body
+        const { name, dimensions, price } = body
 
         if (!userId) {
             return new NextResponse("Unathenticated", { status: 401 })
@@ -43,8 +43,12 @@ export async function PATCH(
             return new NextResponse("Name is required", { status: 400 })
         }
 
-        if (!value) {
-            return new NextResponse("Value is required", { status: 400 })
+        if (!price) {
+            return new NextResponse("Price is required", { status: 400 })
+        }
+
+        if (!dimensions) {
+            return new NextResponse("Dimensions are required", { status: 400 })
         }
 
         if (!params.sizeId) {
@@ -68,7 +72,8 @@ export async function PATCH(
             },
             data: {
                 name,
-                value,
+                dimensions,
+                price,
             },
         })
 

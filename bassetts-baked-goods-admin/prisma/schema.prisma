@@ -58,7 +58,8 @@ model Size {
   storeId String
   store   Store     @relation("StoreToSize", fields: [storeId], references: [id])
   name    String
-  value   String
+  dimensions   String @default("")
+  price   Decimal     @default(0)
   products Product[]
   createdAt  DateTime    @default(now())
   updatedat   DateTime    @updatedAt
@@ -74,13 +75,12 @@ model Product {
   category  Category @relation("CategoryToProduct", fields: [categoryId], references: [id])
   name    String
   description String
-  price   Decimal
   isFeatured  Boolean @default(false)
   isArchived  Boolean @default(false)
   canBeVegan  Boolean @default(false)
   canBeGF     Boolean @default(false)
   sizeId  String
-  size    Size  @relation(fields: [sizeId], references: [id])
+  sizes   Size[]
   images  Image[]
   orderItems  OrderItem[]
   createdAt DateTime  @default(now())

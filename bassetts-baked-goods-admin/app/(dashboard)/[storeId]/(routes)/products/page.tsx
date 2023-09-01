@@ -13,7 +13,7 @@ const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
         },
         include: {
             category: true,
-            size: true,
+            sizes: true,
         },
         orderBy: {
             createdAt: "desc",
@@ -28,9 +28,9 @@ const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
         isArchived: item.isArchived,
         canBeVegan: item.canBeVegan,
         canBeGF: item.canBeGF,
-        price: formatter.format(item.price.toNumber()),
+        //price: formatter.format(item.price.toNumber()),
         category: item.category.name,
-        size: item.size.name,
+        //size: item.size.dimensions,
         createdAt: format(item.createdAt, "MMMM do, yyyy"),
     }))
 

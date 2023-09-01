@@ -1,6 +1,7 @@
 import { format } from "date-fns"
 
 import prismadb from "@/lib/prismadb"
+import { formatter } from "@/lib/utils"
 
 import { SizesClient } from "./components/client"
 import { SizeColumn } from "./components/columns"
@@ -18,7 +19,8 @@ const SizesPage = async ({ params }: { params: { storeId: string } }) => {
     const formattedSizes: SizeColumn[] = sizes.map((item) => ({
         id: item.id,
         name: item.name,
-        value: item.value,
+        dimensions: item.dimensions,
+        price: formatter.format(item.price.toNumber()),
         createdAt: format(item.createdAt, "MMMM do, yyyy"),
     }))
 

@@ -37,10 +37,19 @@ import { Checkbox } from "@/components/ui/checkbox"
 const formSchema = z.object({
     name: z.string().min(1),
     images: z.object({ url: z.string() }).array(),
-    price: z.coerce.number().min(1),
     description: z.string().min(1),
     categoryId: z.string().min(1),
-    sizeId: z.string().min(1),
+    sizes: z
+        .object({
+            id: z.string().min(1),
+            name: z.string().min(1),
+            dimensions: z.string().min(1),
+            price: z.coerce.number().min(1),
+        })
+        .array(),
+    // sizes: z.array(z.string()).refine((value) => value.some((size) => size), {
+    //     message: "You have to select at least one item.",
+    // }),
     isFeatured: z.boolean().default(false).optional(),
     isArchived: z.boolean().default(false).optional(),
     canBeVegan: z.boolean().default(false).optional(),
@@ -75,28 +84,22 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     const toastMessage = initialData ? "Product updated." : "Product created."
     const action = initialData ? "Save changes" : "Create"
 
-    const defaultValues = initialData
-        ? {
-              ...initialData,
-              price: parseFloat(String(initialData?.price)),
-          }
-        : {
-              name: "",
-              images: [],
-              price: 0,
-              description: "",
-              categoryId: "",
-              sizeId: "",
-              isFeatured: false,
-              isArchived: false,
-              canBeVegan: false,
-              canBeGF: false,
-          }
-
     const form = useForm<ProductFormValues>({
         resolver: zodResolver(formSchema),
-        defaultValues,
+        defaultValues: initialData || {
+            name: "",
+            images: [],
+            description: "",
+            categoryId: "",
+            sizes: [],
+            isFeatured: false,
+            isArchived: false,
+            canBeVegan: false,
+            canBeGF: false,
+        },
     })
+
+    console.log(form)
 
     const onSubmit = async (data: ProductFormValues) => {
         try {
@@ -215,24 +218,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                         />
                         <FormField
                             control={form.control}
-                            name="price"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Price</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="number"
-                                            disabled={loading}
-                                            placeholder="9.99"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
                             name="description"
                             render={({ field }) => (
                                 <FormItem>
@@ -283,37 +268,69 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                                 </FormItem>
                             )}
                         />
+                        {/* Add a multi-checkbox field based on Sizes Array*/}
                         <FormField
                             control={form.control}
-                            name="sizeId"
-                            render={({ field }) => (
+                            name="sizes"
+                            render={() => (
                                 <FormItem>
-                                    <FormLabel>Size</FormLabel>
-                                    <Select
-                                        disabled={loading}
-                                        onValueChange={field.onChange}
-                                        value={field.value}
-                                        defaultValue={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue
-                                                    defaultValue={field.value}
-                                                    placeholder="Select a size"
-                                                />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {sizes.map((size) => (
-                                                <SelectItem
-                                                    key={size.id}
-                                                    value={size.id}
-                                                >
-                                                    {size.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <div className="mb-4">
+                                        <FormLabel className="text-base">
+                                            Size / Layers / Etc.
+                                        </FormLabel>
+                                        <FormDescription>
+                                            Select the appropriate sizes for
+                                            each product.
+                                        </FormDescription>
+                                    </div>
+                                    {sizes.map((size) => (
+                                        <FormField
+                                            key={size.id}
+                                            control={form.control}
+                                            name="sizes"
+                                            render={({ field }) => {
+                                                return (
+                                                    <FormItem
+                                                        key={size.id}
+                                                        className="flex flex-row items-start space-x-3 space-y-0"
+                                                    >
+                                                        <FormControl>
+                                                            <Checkbox
+                                                                checked={field.value?.includes(
+                                                                    size.id
+                                                                )}
+                                                                onCheckedChange={(
+                                                                    checked
+                                                                ) => {
+                                                                    return checked
+                                                                        ? field.onChange(
+                                                                              [
+                                                                                  ...field.value,
+                                                                                  size.id,
+                                                                              ]
+                                                                          )
+                                                                        : field.onChange(
+                                                                              field.value?.filter(
+                                                                                  (
+                                                                                      value
+                                                                                  ) =>
+                                                                                      value !==
+                                                                                      size.id
+                                                                              )
+                                                                          )
+                                                                }}
+                                                            />
+                                                        </FormControl>
+                                                        <FormLabel className="text-sm font-normal">
+                                                            {size.name}
+                                                            {" / "}
+                                                            {size.dimensions}
+                                                        </FormLabel>
+                                                    </FormItem>
+                                                )
+                                            }}
+                                        />
+                                    ))}
                                     <FormMessage />
                                 </FormItem>
                             )}

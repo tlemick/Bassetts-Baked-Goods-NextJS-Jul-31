@@ -23,11 +23,11 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { AlertModal } from "@/components/modals/alert-modal"
-import ImageUpload from "@/components/ui/image-upload"
 
 const formSchema = z.object({
     name: z.string().min(1),
-    value: z.string().min(1),
+    dimensions: z.string().min(1),
+    price: z.coerce.number().min(1),
 })
 
 type SizeFormValues = z.infer<typeof formSchema>
@@ -48,12 +48,20 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
     const toastMessage = initialData ? "Size updated." : "Size created."
     const action = initialData ? "Save changes" : "Create"
 
+    const defaultValues = initialData
+        ? {
+              ...initialData,
+              price: parseFloat(String(initialData?.price)),
+          }
+        : {
+              name: "",
+              dimensions: "",
+              price: 0,
+          }
+
     const form = useForm<SizeFormValues>({
         resolver: zodResolver(formSchema),
-        defaultValues: initialData || {
-            name: "",
-            value: "",
-        },
+        defaultValues,
     })
 
     const onSubmit = async (data: SizeFormValues) => {
@@ -141,14 +149,32 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
                         />
                         <FormField
                             control={form.control}
-                            name="value"
+                            name="dimensions"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Value</FormLabel>
+                                    <FormLabel>Dimensions</FormLabel>
                                     <FormControl>
                                         <Input
                                             disabled={loading}
                                             placeholder="Size value"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="price"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Price</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="number"
+                                            disabled={loading}
+                                            placeholder="9.99"
                                             {...field}
                                         />
                                     </FormControl>
