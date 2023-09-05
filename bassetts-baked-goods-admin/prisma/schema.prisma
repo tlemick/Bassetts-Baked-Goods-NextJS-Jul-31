@@ -79,7 +79,6 @@ model Product {
   isArchived  Boolean @default(false)
   canBeVegan  Boolean @default(false)
   canBeGF     Boolean @default(false)
-  sizeId  String
   sizes   Size[]
   images  Image[]
   orderItems  OrderItem[]
@@ -88,7 +87,6 @@ model Product {
 
   @@index([storeId])
   @@index([categoryId])
-  @@index([sizeId])
 }
 
 model Image {

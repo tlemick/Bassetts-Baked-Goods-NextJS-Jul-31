@@ -10,6 +10,7 @@ import { Trash } from 'lucide-react';
 import { Category, Image, Product, Size } from '@prisma/client';
 import { useParams, useRouter } from 'next/navigation';
 
+import { formatter } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,14 +40,9 @@ const formSchema = z.object({
 	images: z.object({ url: z.string() }).array(),
 	description: z.string().min(1),
 	categoryId: z.string().min(1),
-	sizes: z
-		.object({
-			id: z.string().min(1),
-			name: z.string().min(1),
-			dimensions: z.string().min(1),
-			price: z.coerce.number().min(1),
-		})
-		.array(),
+	sizes: z.array(z.string()).refine((value) => value.some((size) => size), {
+		message: 'You have to select at least one size option.',
+	}),
 	isFeatured: z.boolean().default(false).optional(),
 	isArchived: z.boolean().default(false).optional(),
 	canBeVegan: z.boolean().default(false).optional(),
@@ -111,7 +107,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 			router.push(`/${params.storeId}/products`);
 			toast.success(toastMessage);
 		} catch (error: any) {
-			toast.error('Something went wrong.');
+			toast.error(error.response.data);
 		} finally {
 			setLoading(false);
 		}
@@ -277,15 +273,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 													>
 														<FormControl>
 															<Checkbox
-																checked={field.value
-																	?.map(({ id }) => id)
-																	.includes(size.id)}
+																checked={field.value?.includes(size.id)}
 																onCheckedChange={(checked) => {
 																	return checked
-																		? field.onChange([...field.value, size])
+																		? field.onChange([...field.value, size.id])
 																		: field.onChange(
 																				field.value?.filter(
-																					(value) => value.id !== size.id,
+																					(value) => value !== size.id,
 																				),
 																		  );
 																}}

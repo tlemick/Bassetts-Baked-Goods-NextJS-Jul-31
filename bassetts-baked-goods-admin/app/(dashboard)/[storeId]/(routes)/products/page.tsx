@@ -30,7 +30,7 @@ const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
 		canBeGF: item.canBeGF,
 		//price: formatter.format(item.price.toNumber()),
 		category: item.category.name,
-		//size: item.size.dimensions,
+		sizes: Array.isArray(item.sizes) ? item.sizes.map(String) : [], // Map sizes to strings
 		createdAt: format(item.createdAt, 'MMMM do, yyyy'),
 	}));
 

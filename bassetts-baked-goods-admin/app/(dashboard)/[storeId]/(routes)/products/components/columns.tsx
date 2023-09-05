@@ -9,6 +9,7 @@ export type ProductColumn = {
 	id: string;
 	name: string;
 	category: string;
+	sizes: string[];
 	isFeatured: boolean;
 	isArchived: boolean;
 	canBeVegan: boolean;
