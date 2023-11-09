@@ -8,6 +8,7 @@ import { CellAction } from './cell-action';
 export type ProductColumn = {
 	id: string;
 	name: string;
+	description: string;
 	category: string;
 	sizes: string[];
 	isFeatured: boolean;

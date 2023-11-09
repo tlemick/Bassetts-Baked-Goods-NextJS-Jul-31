@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs';
 
 import prismadb from '@/lib/prismadb';
+import { ProductColumn } from '@/app/(dashboard)/[storeId]/(routes)/products/components/columns';
+import { ProductFormValues } from '@/app/(dashboard)/[storeId]/(routes)/products/[productId]/components/product-form';
 
 export async function POST(
 	req: Request,
@@ -10,7 +12,7 @@ export async function POST(
 	try {
 		const { userId } = auth();
 
-		const body = await req.json();
+		const body: ProductFormValues = await req.json();
 
 		const {
 			name,
@@ -32,7 +34,7 @@ export async function POST(
 			return new NextResponse('Name is required', { status: 400 });
 		}
 
-		if (!images || !images.length) {
+		if (!images?.length) {
 			return new NextResponse('Images are required', { status: 400 });
 		}
 
@@ -44,7 +46,7 @@ export async function POST(
 			return new NextResponse('Category id is required', { status: 400 });
 		}
 
-		if (!sizes || !sizes.length) {
+		if (!sizes?.length) {
 			return new NextResponse('Size(s) required', { status: 400 });
 		}
 
@@ -98,7 +100,7 @@ export async function GET(
 	try {
 		const { searchParams } = new URL(req.url);
 		const categoryId = searchParams.get('categoryId') || undefined;
-		//const sizeId = searchParams.get('sizeId') || undefined;
+		//const sizes = searchParams.get('sizeId') || undefined;
 		const isFeatured = searchParams.get('isFeatured');
 		const canBeGF = searchParams.get('canBeGF');
 		const canBeVegan = searchParams.get('canBeVegan');

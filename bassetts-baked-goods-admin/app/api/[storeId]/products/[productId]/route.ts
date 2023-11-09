@@ -62,7 +62,7 @@ export async function PATCH(
 			return new NextResponse('Description is required', { status: 400 });
 		}
 
-		if (!images || !images.length) {
+		if (!images?.length) {
 			return new NextResponse('Images are required', { status: 400 });
 		}
 
@@ -70,7 +70,7 @@ export async function PATCH(
 			return new NextResponse('Category Id is required', { status: 400 });
 		}
 
-		if (!sizes || !sizes.length) {
+		if (!sizes?.length) {
 			return new NextResponse('Size(s) required', { status: 400 });
 		}
 
@@ -108,6 +108,7 @@ export async function PATCH(
 			},
 		});
 
+		// THERE IS NO SIZE FEATURE IN THIS PRODUCT CONST
 		const product = await prismadb.product.update({
 			where: {
 				id: params.productId,
@@ -117,6 +118,9 @@ export async function PATCH(
 					createMany: {
 						data: [...images.map((image: { url: string }) => image)],
 					},
+				},
+				sizes: {
+					update: sizes, // Assuming sizes is an array of strings
 				},
 			},
 		});

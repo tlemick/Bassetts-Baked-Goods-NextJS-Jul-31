@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
-import { Category, Image, Product, Size } from '@prisma/client';
+import { Category, Image, Size } from '@prisma/client';
 import { useParams, useRouter } from 'next/navigation';
 
 import { formatter } from '@/lib/utils';
@@ -40,20 +40,29 @@ const formSchema = z.object({
 	images: z.object({ url: z.string() }).array(),
 	description: z.string().min(1),
 	categoryId: z.string().min(1),
-	sizes: z.array(z.string()).refine((value) => value.some((size) => size), {
-		message: 'You have to select at least one size option.',
-	}),
+	sizes: z
+		.array(
+			z.object({
+				id: z.string(),
+				name: z.string(),
+				dimensions: z.string(),
+				price: z.string(),
+			}),
+		)
+		.refine((value) => value.some((size) => size), {
+			message: 'You have to select at least one size option.',
+		}),
 	isFeatured: z.boolean().default(false).optional(),
 	isArchived: z.boolean().default(false).optional(),
 	canBeVegan: z.boolean().default(false).optional(),
 	canBeGF: z.boolean().default(false).optional(),
 });
 
-type ProductFormValues = z.infer<typeof formSchema>;
+export type ProductFormValues = z.infer<typeof formSchema>;
 
 interface ProductFormProps {
 	initialData:
-		| (Product & {
+		| (ProductFormValues & {
 				images: Image[];
 		  })
 		| null;
@@ -84,7 +93,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 			images: [],
 			description: '',
 			categoryId: '',
-			sizes: [],
+			sizes: [
+				{
+					id: '50dff79b-b022-4b00-95af-e450f3df8dd0',
+				},
+			],
 			isFeatured: false,
 			isArchived: false,
 			canBeVegan: false,
@@ -254,7 +267,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 								<FormItem>
 									<div className="mb-4">
 										<FormLabel className="text-base">
-											Size / Layers / Etc.
+											Product Form & Quantity
 										</FormLabel>
 										<FormDescription>
 											Select the appropriate sizes for each product.
@@ -273,13 +286,19 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 													>
 														<FormControl>
 															<Checkbox
-																checked={field.value?.includes(size.id)}
+																// checked={field.value?.some(({ id }) => {
+																// 	id === size.id;
+																// })}
 																onCheckedChange={(checked) => {
+																	console.log(checked, field.value, size);
 																	return checked
-																		? field.onChange([...field.value, size.id])
+																		? field.onChange([
+																				...(field.value || []),
+																				size,
+																		  ])
 																		: field.onChange(
 																				field.value?.filter(
-																					(value) => value !== size.id,
+																					({ id }) => id !== size.id,
 																				),
 																		  );
 																}}
@@ -289,6 +308,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 															{size.name}
 															{' / '}
 															{size.dimensions}
+															{' / $'}
+															{/* {size.price} */}
+															{/* {formatter.format(size.price.toNumber())} */}
 														</FormLabel>
 													</FormItem>
 												);
