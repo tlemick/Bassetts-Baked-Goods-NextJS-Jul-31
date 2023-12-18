@@ -14,26 +14,38 @@ const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
 		include: {
 			category: true,
 			sizes: true,
+			images: true,
 		},
 		orderBy: {
 			createdAt: 'desc',
 		},
 	});
-
 	const formattedProducts: ProductColumn[] = products.map((item) => ({
 		id: item.id,
 		name: item.name,
 		description: item.description,
+		category: item.category.name,
+		productSizes: item.sizes,
 		isFeatured: item.isFeatured,
 		isArchived: item.isArchived,
 		canBeVegan: item.canBeVegan,
 		canBeGF: item.canBeGF,
-		//price: formatter.format(item.price.toNumber()),
-		category: item.category.name,
-		sizes: Array.isArray(item.sizes) ? item.sizes.map(String) : [], // Map sizes to strings
-		createdAt: format(item.createdAt, 'MMMM do, yyyy'),
+		createdAt: format(item.createdAt, 'MMMM, dd, yyyy'),
 	}));
-
+	// console.log(formattedProducts)
+	// e.g. 
+	// {
+	// 	id: '9e4b1a51-255d-4b12-b651-65caef3ddd4a',
+	// 	name: 'test5',
+	// 	description: 'test5',
+	// 	category: 'Pies',
+	// 	productSizes: [ [Object], [Object] ],
+	// 	isFeatured: true,
+	// 	isArchived: false,
+	// 	canBeVegan: false,
+	// 	canBeGF: false,
+	// 	createdAt: 'December, 17, 2023'
+	//   }
 	return (
 		<div className="flex-col">
 			<div className="flex-1 space-y-4 p-8 pt-6">

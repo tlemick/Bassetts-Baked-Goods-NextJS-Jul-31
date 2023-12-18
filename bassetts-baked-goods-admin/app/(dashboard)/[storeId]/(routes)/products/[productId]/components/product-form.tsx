@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { Trash } from 'lucide-react';
-import { Category, Image, Size } from '@prisma/client';
+import { Category, Image, Size, Product } from '@prisma/client';
 import { useParams, useRouter } from 'next/navigation';
 
 import { formatter } from '@/lib/utils';
@@ -34,41 +34,39 @@ import {
 } from '@/components/ui/select';
 import ImageUpload from '@/components/ui/image-upload';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Decimal } from 'decimal.js'; // Adjust based on your specific library
+
 
 const formSchema = z.object({
 	name: z.string().min(1),
 	images: z.object({ url: z.string() }).array(),
 	description: z.string().min(1),
 	categoryId: z.string().min(1),
-	sizes: z
-		.array(
-			z.object({
-				id: z.string(),
-				name: z.string(),
-				dimensions: z.string(),
-				price: z.string(),
-			}),
-		)
-		.refine((value) => value.some((size) => size), {
-			message: 'You have to select at least one size option.',
-		}),
 	isFeatured: z.boolean().default(false).optional(),
 	isArchived: z.boolean().default(false).optional(),
 	canBeVegan: z.boolean().default(false).optional(),
 	canBeGF: z.boolean().default(false).optional(),
+	//Question: What fields do I need here?
+	//Just an array of strings? Or does it need to match the prisma schema?
+	productSizes: z.array(
+		z.object({
+		  id: z.string().min(1),
+		}),
+	  ),
 });
 
-export type ProductFormValues = z.infer<typeof formSchema>;
-
+type ProductFormValues = z.infer<typeof formSchema>;
+//do we need to pull associated sizes here?
 interface ProductFormProps {
-	initialData:
-		| (ProductFormValues & {
+	initialData: Product & {
 				images: Image[];
-		  })
+				sizes: Size[];
+		  }
 		| null;
 	categories: Category[];
 	sizes: Size[];
 }
+
 
 export const ProductForm: React.FC<ProductFormProps> = ({
 	initialData,
@@ -86,23 +84,24 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 	const toastMessage = initialData ? 'Product updated.' : 'Product created.';
 	const action = initialData ? 'Save changes' : 'Create';
 
+	const defaultValues = initialData ? {
+		...initialData,
+		productSizes: initialData?.sizes?.map((size) => ({ id: size.id })),
+	} : {
+		name: '',
+		images: [],
+		sizes: [],
+		description: '',
+		categoryId: '',
+		isFeatured: false,
+		isArchived: false,
+		canBeVegan: false,
+		canBeGF: false,
+	}
+
 	const form = useForm<ProductFormValues>({
 		resolver: zodResolver(formSchema),
-		defaultValues: initialData || {
-			name: '',
-			images: [],
-			description: '',
-			categoryId: '',
-			sizes: [
-				{
-					id: '50dff79b-b022-4b00-95af-e450f3df8dd0',
-				},
-			],
-			isFeatured: false,
-			isArchived: false,
-			canBeVegan: false,
-			canBeGF: false,
-		},
+		defaultValues
 	});
 
 	const onSubmit = async (data: ProductFormValues) => {
@@ -116,10 +115,13 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 			} else {
 				await axios.post(`/api/${params.storeId}/products`, data);
 			}
+			
 			router.refresh();
 			router.push(`/${params.storeId}/products`);
 			toast.success(toastMessage);
 		} catch (error: any) {
+			console.log("no initial data")
+				console.log(data)
 			toast.error(error.response.data);
 		} finally {
 			setLoading(false);
@@ -259,10 +261,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 								</FormItem>
 							)}
 						/>
-						{/* Add a multi-checkbox field based on Sizes Array*/}
 						<FormField
 							control={form.control}
-							name="sizes"
+							name="productSizes" 
 							render={() => (
 								<FormItem>
 									<div className="mb-4">
@@ -270,53 +271,49 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 											Product Form & Quantity
 										</FormLabel>
 										<FormDescription>
-											Select the appropriate sizes for each product.
+											Select the appropriate dimensions & quantity for each
+											product.
 										</FormDescription>
 									</div>
-									{sizes.map((size) => (
-										<FormField
-											key={size.id}
-											control={form.control}
-											name="sizes"
-											render={({ field }) => {
-												return (
-													<FormItem
-														key={size.id}
-														className="flex flex-row items-start space-x-3 space-y-0"
-													>
-														<FormControl>
-															<Checkbox
-																// checked={field.value?.some(({ id }) => {
-																// 	id === size.id;
-																// })}
-																onCheckedChange={(checked) => {
-																	console.log(checked, field.value, size);
-																	return checked
-																		? field.onChange([
-																				...(field.value || []),
-																				size,
-																		  ])
-																		: field.onChange(
-																				field.value?.filter(
-																					({ id }) => id !== size.id,
-																				),
-																		  );
-																}}
-															/>
-														</FormControl>
-														<FormLabel className="text-sm font-normal">
-															{size.name}
-															{' / '}
-															{size.dimensions}
-															{' / $'}
-															{/* {size.price} */}
-															{/* {formatter.format(size.price.toNumber())} */}
-														</FormLabel>
-													</FormItem>
-												);
-											}}
-										/>
-									))}
+									<div className="rounded-md border p-4">
+										{sizes.map((size) => (
+											<FormField
+												key={size.id}
+												control={form.control}
+												name="productSizes"
+												render={({ field }) => {
+													return (
+														<FormItem
+															key={size.id}
+															className="flex flex-row items-end space-x-3"
+														>
+															<FormControl>
+																<Checkbox
+																	//What happens here?
+																	//You click the box, it takes the id assigned to that box
+																	// I don't understand the comparison 
+																	checked={(field.value || []).map(f => f.id)?.includes(size.id)}
+																	onCheckedChange={(checked) => {
+																		return checked
+																		    ? field.onChange([...(field.value || []), size])
+																			: field.onChange(
+																					field.value?.filter(
+																						k => k.id !== size.id
+																					),
+																			  );
+																	}}
+																/>
+															</FormControl>
+															<FormLabel className="text-sm font-normal">
+																{size.name} {' / '} {size.dimensions} {' / $'}
+																{size.price.toString()}
+															</FormLabel>
+														</FormItem>
+													);
+												}}
+											/>
+										))}
+									</div>
 									<FormMessage />
 								</FormItem>
 							)}

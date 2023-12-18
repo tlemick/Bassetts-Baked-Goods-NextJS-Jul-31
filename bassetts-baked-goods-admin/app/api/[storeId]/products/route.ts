@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs';
 
 import prismadb from '@/lib/prismadb';
-import { ProductColumn } from '@/app/(dashboard)/[storeId]/(routes)/products/components/columns';
-import { ProductFormValues } from '@/app/(dashboard)/[storeId]/(routes)/products/[productId]/components/product-form';
 
 export async function POST(
 	req: Request,
@@ -12,14 +10,14 @@ export async function POST(
 	try {
 		const { userId } = auth();
 
-		const body: ProductFormValues = await req.json();
+		const body = await req.json();
 
 		const {
 			name,
 			description,
 			categoryId,
-			sizes,
 			images,
+			productSizes,
 			isFeatured,
 			isArchived,
 			canBeVegan,
@@ -34,7 +32,7 @@ export async function POST(
 			return new NextResponse('Name is required', { status: 400 });
 		}
 
-		if (!images?.length) {
+		if (!images || !images.length) {
 			return new NextResponse('Images are required', { status: 400 });
 		}
 
@@ -46,7 +44,7 @@ export async function POST(
 			return new NextResponse('Category id is required', { status: 400 });
 		}
 
-		if (!sizes?.length) {
+		if (!productSizes || !productSizes) {
 			return new NextResponse('Size(s) required', { status: 400 });
 		}
 
@@ -65,6 +63,9 @@ export async function POST(
 			return new NextResponse('Unauthorized', { status: 405 });
 		}
 
+		//console.log(productSizes);
+		//console.log(productSizes.map(f => {id: f.id}));
+
 		const product = await prismadb.product.create({
 			data: {
 				name,
@@ -75,12 +76,16 @@ export async function POST(
 				canBeVegan,
 				categoryId,
 				storeId: params.storeId,
+				//figure out how to send the selected sizes from product form to be created
+				//sizes: productSizes.map((p: { id: string }) => {id: p.id}),
 				sizes: {
-					connect: sizes.map((size) => ({ id: size })),
+					connect: productSizes,
 				},
 				images: {
 					createMany: {
-						data: [...images.map((image: { url: string }) => image)],
+						data: [
+							...images.map((image: { url: string }) => image),
+						],
 					},
 				},
 			},
@@ -100,7 +105,8 @@ export async function GET(
 	try {
 		const { searchParams } = new URL(req.url);
 		const categoryId = searchParams.get('categoryId') || undefined;
-		//const sizes = searchParams.get('sizeId') || undefined;
+		//I think that I need to get an array of size IDs here || is it necessary at all?
+		const sizes = searchParams.get('size.id') || undefined;
 		const isFeatured = searchParams.get('isFeatured');
 		const canBeGF = searchParams.get('canBeGF');
 		const canBeVegan = searchParams.get('canBeVegan');

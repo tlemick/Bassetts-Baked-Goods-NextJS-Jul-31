@@ -36,13 +36,14 @@ export async function PATCH(
 ) {
 	try {
 		const { userId } = auth();
+
 		const body = await req.json();
 
 		const {
 			name,
 			description,
 			categoryId,
-			sizes,
+			productSizes,
 			images,
 			isFeatured,
 			isArchived,
@@ -62,7 +63,7 @@ export async function PATCH(
 			return new NextResponse('Description is required', { status: 400 });
 		}
 
-		if (!images?.length) {
+		if (!images || !images.length) {
 			return new NextResponse('Images are required', { status: 400 });
 		}
 
@@ -70,13 +71,14 @@ export async function PATCH(
 			return new NextResponse('Category Id is required', { status: 400 });
 		}
 
-		if (!sizes?.length) {
+		if (!productSizes || !productSizes.length) {
 			return new NextResponse('Size(s) required', { status: 400 });
 		}
 
 		if (!params.productId) {
 			return new NextResponse('Product id is required', { status: 400 });
 		}
+
 
 		const storeByUserId = await prismadb.store.findFirst({
 			where: {
@@ -89,6 +91,7 @@ export async function PATCH(
 			return new NextResponse('Unauthorized', { status: 403 });
 		}
 
+		//this section of code takes the data for the product and deletes any existing images. ((and should also remove any Size IDS))
 		await prismadb.product.update({
 			where: {
 				id: params.productId,
@@ -97,9 +100,12 @@ export async function PATCH(
 				name,
 				description,
 				categoryId,
-				sizes,
+				//We need to remove all sizes that might be present in the product
 				images: {
 					deleteMany: {},
+				},
+				sizes: {
+					set: [],
 				},
 				isArchived,
 				isFeatured,
@@ -108,24 +114,27 @@ export async function PATCH(
 			},
 		});
 
-		// THERE IS NO SIZE FEATURE IN THIS PRODUCT CONST
+		//and we add the images AND SIZES here
 		const product = await prismadb.product.update({
 			where: {
-				id: params.productId,
+				id: params.productId
 			},
 			data: {
 				images: {
 					createMany: {
-						data: [...images.map((image: { url: string }) => image)],
-					},
+						data: [
+							...images.map((image: {url: string}) => image),
+						]
+					}
 				},
 				sizes: {
-					update: sizes, // Assuming sizes is an array of strings
+					connect: productSizes,
 				},
-			},
-		});
+			}
+		})
 
 		return NextResponse.json(product);
+
 	} catch (error) {
 		console.log('[PRODUCT_PATCH]', error);
 		return new NextResponse('Internal error', { status: 500 });

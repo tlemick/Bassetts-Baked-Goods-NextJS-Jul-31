@@ -3,14 +3,12 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type ProductColumn = {
 	id: string;
 	name: string;
 	description: string;
 	category: string;
-	sizes: string[];
+	//sizes: string[];
 	isFeatured: boolean;
 	isArchived: boolean;
 	canBeVegan: boolean;
@@ -27,10 +25,16 @@ export const columns: ColumnDef<ProductColumn>[] = [
 		accessorKey: 'category',
 		header: 'Category',
 	},
-	{
-		accessorKey: 'description',
-		header: 'Description',
-	},
+	//the description is too wordy for this screen.
+	// {
+	// 	accessorKey: 'description',
+	// 	header: 'Description',
+	// },
+	//	find a nice formatted way to put the sizes / prices here.
+	//{
+	// 	accessorKey: 'sizes',
+	// 	header: 'Sizes / Price',
+	// },
 	{
 		accessorKey: 'canBeVegan',
 		header: 'Vegan',
