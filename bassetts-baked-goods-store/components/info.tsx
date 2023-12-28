@@ -3,9 +3,10 @@
 import { ShoppingCart, Vegan, WheatOff } from 'lucide-react';
 
 import Currency from '@/components/ui/currency';
-import Button from '@/components/ui/button';
-import { Product } from '@/types';
+import Button from './ui/button';
+import { Product, Size } from '@/types';
 import useCart from '@/hooks/use-cart';
+import { useState } from 'react';
 
 interface InfoProps {
 	data: Product;
@@ -13,33 +14,53 @@ interface InfoProps {
 
 const Info: React.FC<InfoProps> = ({ data }) => {
 	const cart = useCart();
+	const [selectedSize, setSelectedSize] = useState<Size | null>(
+		data?.sizes && data.sizes.length > 0 ? data.sizes[0] : null,
+	);
+
+	const [quantity, setQuantity] = useState<number>(1);
 
 	const onAddToCart = () => {
-		cart.addItem(data);
+		const priceToAdd = selectedSize !== null ? selectedSize.price : data.price;
+		const totalPrice = priceToAdd * quantity;
+		data.selectedSize = selectedSize;
+		cart.addItem({ ...data, price: totalPrice, quantity });
 	};
 
-	console.log(data);
+	const handleSizeSelection = (size: Size | null) => {
+		if (size !== null) {
+			setSelectedSize(size);
+		}
+	};
+
+	const incrementQuantity = () => {
+		setQuantity((prevQuantity) => prevQuantity + 1);
+	};
+
+	const decrementQuantity = () => {
+		if (quantity > 1) {
+			setQuantity((prevQuantity) => prevQuantity - 1);
+		}
+	};
 
 	return (
 		<div>
 			<h1 className="text-3xl font-bold text-gray-900">{data.name}</h1>
 			<div className="mt-3 flex items-end justify-between">
 				<p className="text-2xl text-gray-900">
-					{/* <Currency value={data?.price} /> */}
+					<Currency
+						value={selectedSize !== null ? selectedSize.price : data.price}
+					/>
 				</p>
 			</div>
 			<hr className="my-4" />
 
-			<div className="flex flex-col gap-y-6">
+			<div className="flex flex-col">
 				<div>
 					<p className="text-black">{data?.description}</p>
 				</div>
-				<div className="flex items-center gap-x-4">
-					<h3 className="font-semibold text-black">Size:</h3>
-					{/* <div>{data?.sizes?.value}</div> */}
-				</div>
 				<div>
-					<div className="flex gap-x-4">
+					<div className="flex gap-x-4 mt-4">
 						{data?.canBeVegan && (
 							<div className="flex gap-x-2 items-center">
 								<Vegan size={16} className="text-gray-600" />
@@ -54,9 +75,58 @@ const Info: React.FC<InfoProps> = ({ data }) => {
 						)}
 					</div>
 				</div>
+				<hr className="my-4" />
+
+				<div className="flex flex-col gap-y-4">
+					<h3 className="font-semibold text-black">Size Options:</h3>
+					{data?.sizes && (
+						<div className="gap-4 flex flex-row min-w-full">
+							{data.sizes
+								.sort((a, b) => a.price - b.price)
+								.map((size, index) => (
+									<div
+										className={`relative border ${
+											selectedSize?.id === size.id
+												? 'border-rose-300 bg-rose-50'
+												: 'border-gray-300'
+										} flex flex-col items-center py-4 flex-grow hover:border-rose-300 rounded-lg`}
+										key={index}
+										onClick={() => handleSizeSelection(size)}
+									>
+										<div
+											className={`absolute top-2 left-2 w-4 h-4 rounded-full bg-rose-500 ${
+												selectedSize?.id === size.id ? 'visible' : 'hidden'
+											}`}
+										/>
+										<div>{size.name}</div>
+										{size.name !== size.dimensions && (
+											<div>{size.dimensions}</div>
+										)}
+										{/* <Currency value={size.price} /> */}
+									</div>
+								))}
+						</div>
+					)}
+				</div>
 			</div>
-			<div className="mt-10 flex items-center gap-x-3">
-				<Button onClick={onAddToCart} className="flex items-center gap-x-2">
+			<div className="mt-4">
+				<div>Quantity:</div>
+				<div className="flex gap-x-4 mt-2">
+					<Button variant="increment" onClick={decrementQuantity}>
+						-
+					</Button>
+					<span className="w-[18px] inline-block text-center">{quantity}</span>
+					<Button variant="increment" onClick={incrementQuantity}>
+						+
+					</Button>
+				</div>
+			</div>
+			<div className="mt-10 flex items-center  gap-x-3">
+				<Button
+					variant="primary"
+					onClick={onAddToCart}
+					className="flex items-center gap-x-2"
+				>
 					Add To Cart
 					<ShoppingCart size={20} />
 				</Button>

@@ -2,13 +2,15 @@
 
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
+import { Vegan, WheatOff } from 'lucide-react';
+
 
 export type ProductColumn = {
 	id: string;
 	name: string;
 	description: string;
 	category: string;
-	//sizes: string[];
+	// sizes: string[];
 	isFeatured: boolean;
 	isArchived: boolean;
 	canBeVegan: boolean;
@@ -31,18 +33,20 @@ export const columns: ColumnDef<ProductColumn>[] = [
 	// 	header: 'Description',
 	// },
 	//	find a nice formatted way to put the sizes / prices here.
-	//{
+	// {
 	// 	accessorKey: 'sizes',
 	// 	header: 'Sizes / Price',
 	// },
-	{
-		accessorKey: 'canBeVegan',
-		header: 'Vegan',
-	},
-	{
-		accessorKey: 'canBeGF',
-		header: 'GF',
-	},
+    {
+        accessorKey: 'canBeVegan',
+        header: 'Vegan',
+        cell: ({ row }) => (row.original.canBeVegan ? <Vegan /> : null),
+    },
+    {
+        accessorKey: 'canBeGF',
+        header: 'GF',
+        cell: ({ row }) => (row.original.canBeGF ? <WheatOff /> : null),
+    },
 	{
 		accessorKey: 'isArchived',
 		header: 'Archived',

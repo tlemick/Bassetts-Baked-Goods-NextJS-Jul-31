@@ -21,6 +21,8 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import { Textarea } from "@/components/ui/textarea"
+
 import { Input } from "@/components/ui/input"
 import { AlertModal } from "@/components/modals/alert-modal"
 import {
@@ -163,11 +165,11 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
                                 <FormItem>
                                     <FormLabel>Description</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            disabled={loading}
-                                            placeholder="Category description"
-                                            {...field}
-                                        />
+                                    <Textarea
+											disabled={loading}
+											placeholder="Product description"
+											{...field}
+										/>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

@@ -21,7 +21,7 @@ const SizesPage = async ({ params }: { params: { storeId: string } }) => {
         name: item.name,
         dimensions: item.dimensions,
         price: formatter.format(item.price.toNumber()),
-        createdAt: format(item.createdAt, "MMMM do, yyyy"),
+        createdAt: format(item.createdAt, "MMMM, dd, yyyy"),
     }))
 
     return (

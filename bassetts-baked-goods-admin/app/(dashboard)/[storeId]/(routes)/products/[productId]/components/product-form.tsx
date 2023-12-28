@@ -22,6 +22,8 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@/components/ui/form';
+import { Textarea } from "@/components/ui/textarea"
+
 import { Separator } from '@/components/ui/separator';
 import { Heading } from '@/components/ui/heading';
 import { AlertModal } from '@/components/modals/alert-modal';
@@ -35,7 +37,6 @@ import {
 import ImageUpload from '@/components/ui/image-upload';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Decimal } from 'decimal.js'; // Adjust based on your specific library
-
 
 const formSchema = z.object({
 	name: z.string().min(1),
@@ -219,7 +220,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 								<FormItem>
 									<FormLabel>Description</FormLabel>
 									<FormControl>
-										<Input
+										<Textarea
 											disabled={loading}
 											placeholder="Product description"
 											{...field}

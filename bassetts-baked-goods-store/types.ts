@@ -21,6 +21,9 @@ export interface Product {
 	canBeGF: boolean;
 	sizes: Size[];
 	images: Image[];
+	price: number;
+	quantity: number;
+	selectedSize: Size | null;
 }
 
 export interface Image {
@@ -32,5 +35,5 @@ export interface Size {
 	id: string;
 	name: string;
 	dimensions: string;
-	price: string;
+	price: number;
 }
