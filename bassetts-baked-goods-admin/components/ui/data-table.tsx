@@ -1,68 +1,76 @@
-"use client"
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+'use client'
 
-import { useState } from "react"
+import { useState } from 'react'
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-
-import {
-    ColumnDef,
-    ColumnFiltersState,
-    flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    useReactTable,
-} from "@tanstack/react-table"
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+  type ColumnDef,
+  type ColumnFiltersState,
+  type SortingState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable
+} from '@tanstack/react-table'
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 
 interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
-    searchKey: string
+  columns: Array<ColumnDef<TData, TValue>>
+  data: TData[]
+  searchKey: string
 }
 
-export function DataTable<TData, TValue>({
-    columns,
-    data,
-    searchKey,
+export function DataTable<TData, TValue> ({
+  columns,
+  data,
+  searchKey
 }: DataTableProps<TData, TValue>) {
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
 
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        onColumnFiltersChange: setColumnFilters,
-        getFilteredRowModel: getFilteredRowModel(),
-        state: {
-            columnFilters,
-        },
-    })
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      columnFilters,
+      sorting
+    }
+  })
 
-    return (
+  return (
         <div>
             <div className="flex items-center py-4">
                 <Input
-                    placeholder="Filter"
+                    placeholder="Filter by name"
                     value={
                         (table
-                            .getColumn(searchKey)
-                            ?.getFilterValue() as string) ?? ""
+                          .getColumn(searchKey)
+                          ?.getFilterValue() as string) ?? ''
                     }
                     onChange={(event) =>
-                        table
-                            .getColumn(searchKey)
-                            ?.setFilterValue(event.target.value)
+                      table
+                        .getColumn(searchKey)
+                        ?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm"
                 />
@@ -73,41 +81,43 @@ export function DataTable<TData, TValue>({
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
-                                    return (
+                                  return (
                                         <TableHead key={header.id}>
                                             {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                      header.column.columnDef
-                                                          .header,
-                                                      header.getContext()
-                                                  )}
+                                              ? null
+                                              : flexRender(
+                                                header.column.columnDef
+                                                  .header,
+                                                header.getContext()
+                                              )}
                                         </TableHead>
-                                    )
+                                  )
                                 })}
                             </TableRow>
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
+                        {(!Number.isNaN((table.getRowModel().rows?.length)))
+                          ? (
+                              table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
                                     data-state={
-                                        row.getIsSelected() && "selected"
+                                        row.getIsSelected() && 'selected'
                                     }
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
                                             {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
+                                              cell.column.columnDef.cell,
+                                              cell.getContext()
                                             )}
                                         </TableCell>
                                     ))}
                                 </TableRow>
-                            ))
-                        ) : (
+                              ))
+                            )
+                          : (
                             <TableRow>
                                 <TableCell
                                     colSpan={columns.length}
@@ -116,7 +126,7 @@ export function DataTable<TData, TValue>({
                                     No results.
                                 </TableCell>
                             </TableRow>
-                        )}
+                            )}
                     </TableBody>
                 </Table>
             </div>
@@ -124,7 +134,7 @@ export function DataTable<TData, TValue>({
                 <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => table.previousPage()}
+                    onClick={() => { table.previousPage() }}
                     disabled={!table.getCanPreviousPage()}
                 >
                     Previous
@@ -132,12 +142,12 @@ export function DataTable<TData, TValue>({
                 <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => table.nextPage()}
+                    onClick={() => { table.nextPage() }}
                     disabled={!table.getCanNextPage()}
                 >
                     Next
                 </Button>
             </div>
         </div>
-    )
+  )
 }

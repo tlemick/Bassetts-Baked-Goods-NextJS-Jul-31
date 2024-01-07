@@ -45,9 +45,9 @@ const Info: React.FC<InfoProps> = ({ data }) => {
 
 	return (
 		<div>
-			<h1 className="text-3xl font-bold text-gray-900">{data.name}</h1>
-			<div className="mt-3 flex items-end justify-between">
-				<p className="text-2xl text-gray-900">
+			<h1 className="text-[48px] font-bold text-gray-900">{data.name}</h1>
+			<div className="mt-9 flex items-end justify-between">
+				<p className="text-lg text-gray-900">
 					<Currency
 						value={selectedSize !== null ? selectedSize.price : data.price}
 					/>
@@ -109,9 +109,9 @@ const Info: React.FC<InfoProps> = ({ data }) => {
 					)}
 				</div>
 			</div>
-			<div className="mt-4">
-				<div>Quantity:</div>
-				<div className="flex gap-x-4 mt-2">
+			<h3 className="mt-8 font-semibold text-black">Quantity:</h3>
+			<div className="mt-4 flex flex-row items-center gap-4">
+				<div className="flex border border-black p-1 rounded-full gap-x-4">
 					<Button variant="increment" onClick={decrementQuantity}>
 						-
 					</Button>
@@ -120,16 +120,16 @@ const Info: React.FC<InfoProps> = ({ data }) => {
 						+
 					</Button>
 				</div>
-			</div>
-			<div className="mt-10 flex items-center  gap-x-3">
-				<Button
-					variant="primary"
-					onClick={onAddToCart}
-					className="flex items-center gap-x-2"
-				>
-					Add To Cart
-					<ShoppingCart size={20} />
-				</Button>
+				<div className="flex items-center gap-x-3">
+					<Button
+						variant="primary"
+						onClick={onAddToCart}
+						className="flex items-center gap-x-2"
+					>
+						Add To Cart
+						<ShoppingCart size={20} />
+					</Button>
+				</div>
 			</div>
 		</div>
 	);

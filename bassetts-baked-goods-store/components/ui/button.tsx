@@ -38,10 +38,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     `;
 
 		const incrementStyles = `
-      bg-black
+      bg-white
       border-transparent
-      text-white
-	  rounded-lg
+      text-black
+	  rounded-full
+	  hover:bg-rose-100
       px-2
     `;
 

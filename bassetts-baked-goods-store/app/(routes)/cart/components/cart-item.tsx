@@ -53,7 +53,7 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
 						<div className="absolute z-10 right-0 top-0">
 							<IconButton onClick={onRemove} icon={<X size={15} />} />
 						</div>
-						<div className="relative h-full pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
+						<div className="h-full pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
 							<div className="flex flex-col h-full justify-between">
 								<div>
 									<p className="text-2xl font-semibold text-black">
@@ -62,9 +62,9 @@ const CartItem: React.FC<CartItemProps> = ({ data }) => {
 									<p className="text-lg font-semibold text-black">
 										{data.selectedSize?.name}
 									</p>
-									<Currency value={data.price} />
+									<Currency value={data.selectedSize?.price} />
 								</div>
-								<div className="flex gap-x-4 mt-2 pb-4">
+								<div className="mt-2 flex border self-start border-black p-1 rounded-full gap-x-4">
 									<Button variant="increment" onClick={decrementQuantity}>
 										-
 									</Button>
